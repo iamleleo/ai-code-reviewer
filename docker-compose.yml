@@ -1,15 +1,19 @@
 services:  
   flask-app:
     build: .
+    command: gunicorn --bind 0.0.0.0:5000 --reload main:app
     ports:
       - "5001:5000"
     depends_on:
       - mongodb
-      - redis      
+      - redis
     environment:
       - FLASK_ENV=development       # replaces debug: true
       - CELERY_BROKER_URL=redis://redis:6379/0
       - MONGO_URI=mongodb://admin:123@mongodb:27017/code_review_db?authSource=admin
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app
 
   redis:
     image: redis:7-alpine
